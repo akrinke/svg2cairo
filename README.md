@@ -20,12 +20,12 @@ After the successful compilation of `svg2cairoxml`, you can convert SVG files to
 
 Now, we can convert the generated XML file to source code. This is done using a Lua script that parses and processes the XML file:
 
-   $ lua cairoxml2cairo.lua xml-file source-file
+    $ lua cairoxml2cairo.lua xml-file source-file
 
 (not yet in repository)
 
 ## License
 
-This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/MIT_License).
-© 2010 Andreas Krinke <andreas.krinke@gmx.de>.
+This software is licensed under the [MIT license](http://en.wikipedia.org/wiki/MIT_License).  
+© 2010 Andreas Krinke &lt;<andreas.krinke@gmx.de>&gt;.
 
