@@ -12,6 +12,12 @@ With [librsvg](http://librsvg.sourceforge.net/), there exists an open-source lib
 
 The first step is to convert the SVG into an XML file describing the Cairo drawing commands. This is implemented in `svg2cairoxml.c` using librsvg and the XML surface that was introduced in Cairo 1.10. Rendering to an XML surface is not enabled by default. Therefore, `--enable-xml=yes` has to be passed to `configure` when compiling Cairo.
 
+#### Building
+
+`svg2cairoxml` depends on librsvg and cairo (1.10 or later) with XML surface support enabled. The `Makefile` uses `pkg-config` to find the dependencies.
+
+#### Usage
+
 After the successful compilation of `svg2cairoxml`, you can convert SVG files to Cairo XML files:
 
     $ ./svg2cairoxml svg-file xml-file
@@ -21,8 +27,12 @@ After the successful compilation of `svg2cairoxml`, you can convert SVG files to
 Now, we can convert the generated XML file to source code. This is done using a Lua script that parses and processes the XML file:
 
     $ lua cairoxml2cairo.lua xml-file source-file
+    
+At the moment, this generates a `slua` file. If opened with [Scrupp](http://scrupp.sourceforge.net), the vector graphic is displayed in a window.
 
-(not yet in repository)
+## TODO
+
+* support more output formats
 
 ## License
 
