@@ -26,12 +26,18 @@ After the successful compilation of `svg2cairoxml`, you can convert SVG files to
 
 Now, we can convert the generated XML file to source code. This is done using a Lua script that parses and processes the XML file:
 
-    $ lua cairoxml2cairo.lua xml-file source-file
+    $ lua cairoxml2cairo.lua [-f format] xml-file source-file
     
-At the moment, this generates a `slua` file. If opened with [Scrupp](http://scrupp.sourceforge.net), the vector graphic is displayed in a window.
+`format` can be either `lua-oocairo` (default), or `scrupp`.
+    
+#### Output Formats
+
+1. `lua-oocairo`: Creates a Lua file for use with [oocairo](http://git.naquadah.org/?p=oocairo.git) ([manual](http://scrupp.sourceforge.net/manuals/0.4/lua-oocairo/index.html)), a cairo binding for Lua.
+2. `scrupp`: Generates a `slua` file. If opened with [Scrupp](http://scrupp.sourceforge.net), the vector graphic is displayed in a window.
 
 ## TODO
 
+* remove redundancy, e.g., no more multiple definitions of the same path
 * support more output formats
 
 ## License

@@ -22,17 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 --]]
 
-local formats = "c lua-oocairo scrupp"
+local formats = "lua-oocairo scrupp"
 
 -- default export filter
-local format = "scrupp"
+local format = "lua-oocairo"
 local infile, outfile
 
--- collect command line arguments
+-- collect command line argument
 if #arg == 2 then
   infile  = arg[1]
   outfile = arg[2]
-elseif #arg == 4 and arg[1] == "-f" and string.find(formats, arg[2]) then
+elseif #arg == 4 and arg[1] == "-f" and string.find(formats, arg[2], 1, true) then
   format  = arg[2]
   infile  = arg[3]
   outfile = arg[4]
