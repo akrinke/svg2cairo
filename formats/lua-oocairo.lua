@@ -40,7 +40,9 @@ return {
 width = $width, 
 height = $height,
 render = function(cr)
+
 local temp_surface
+local old_cr
 local pattern
 local matrix
 ]],
@@ -50,9 +52,9 @@ local matrix
   
   surface = {
     pre = [[
-do
+old_cr = cr
 temp_surface = Cairo.image_surface_create("argb32", $width, $height)
-local cr = Cairo.context_create(temp_surface)]],
+cr = Cairo.context_create(temp_surface)]],
   },
   
   fill   = {post = "cr:fill_preserve()\n----------------------"},
@@ -78,7 +80,10 @@ local cr = Cairo.context_create(temp_surface)]],
   ["source-pattern"] = {
     post = function(state, value)
       if state.last_environment == "surface" then
-        return "end\ncr:set_source(temp_surface, 0, 0)"
+        return [[
+cr = old_cr
+cr:set_source(temp_surface, 0, 0)
+temp_surface = nil]]
       else
         return "cr:set_source(pattern)"
       end
