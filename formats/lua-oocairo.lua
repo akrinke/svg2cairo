@@ -59,6 +59,7 @@ cr = Cairo.context_create(temp_surface)]],
   
   fill   = {post = "cr:fill_preserve()\n----------------------"},
   stroke = {post = "cr:stroke_preserve()\n----------------------"},
+  paint  = {post = "cr:paint()\n----------------------"},
   mask   = {},
   
   operator        = function(state, value) return format('cr:set_operator("%s")', lower(value)) end,

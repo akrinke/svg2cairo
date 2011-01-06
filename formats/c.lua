@@ -55,6 +55,7 @@ cr = cairo_create(temp_surface);]],
   
   fill   = {post = "cairo_fill_preserve(cr);\n /********************/"},
   stroke = {post = "cairo_stroke_preserve(cr);\n/********************/"},
+  paint  = {post = "cairo_paint(cr);\n/********************/"},
   mask   = {},
   
   operator        = "cairo_set_operator(cr, CAIRO_OPERATOR_$value);",
