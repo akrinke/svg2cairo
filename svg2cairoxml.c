@@ -24,7 +24,6 @@ THE SOFTWARE.
 #include <stdlib.h>
 
 #include <librsvg/rsvg.h>
-#include <librsvg/rsvg-cairo.h>
 
 #include <cairo.h>
 #include <cairo-xml.h>
@@ -40,12 +39,6 @@ static cairo_status_t write_func(FILE *fp, unsigned char *data, unsigned int siz
     return CAIRO_STATUS_SUCCESS;
 }
 
-static void rsvg_cairo_size_callback(int *width, int *height, gpointer data) {
-    RsvgDimensionData *dimensions = data;
-    *width = dimensions->width;
-    *height = dimensions->height;
-}
-
 int main(int argc, char *argv[]) {
     FILE *fp;
     RsvgHandle *rsvg;
@@ -59,7 +52,7 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     
-    fp = fopen(argv[1], "r"); 
+    fp = fopen(argv[1], "r");
     if (fp == NULL) {
         printf("could not open '%s' for read\n", argv[1]);
         return 1;
@@ -74,11 +67,9 @@ int main(int argc, char *argv[]) {
 
     dev = cairo_xml_create_for_stream((cairo_write_func_t)write_func, fp);
 
-    rsvg_init();
     rsvg_set_default_dpi_x_y(-1, -1);
 
     rsvg = rsvg_handle_new_from_file(argv[1], NULL);
-    rsvg_handle_set_size_callback (rsvg, rsvg_cairo_size_callback, &dimensions, NULL);
     rsvg_handle_get_dimensions(rsvg, &dimensions);
     
     fprintf(fp, "<image width='%d' height='%d'>\n", dimensions.width, dimensions.height);
@@ -98,3 +89,4 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
