@@ -1,5 +1,5 @@
 --[[
-Copyright (c) 2010 Andreas Krinke
+Copyright (c) 2010-2014 Andreas Krinke
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -60,7 +60,7 @@ cr = cairo_create(temp_surface);]],
   
   operator        = "cairo_set_operator(cr, CAIRO_OPERATOR_$value);",
   tolerance       = "cairo_set_tolerance(cr, $value);",
-  antialias       = "cairo_set_antialias(cr, CAIRO_$value);",
+  antialias       = "cairo_set_antialias(cr, CAIRO_ANTIALIAS_$value);",
   ["fill-rule"]   = "cairo_set_fill_rule(cr, CAIRO_FILL_RULE_$value);",
   ["line-width"]  = "cairo_set_line_width(cr, $value);",
   ["miter-limit"] = "cairo_set_miter_limit(cr, $value);",

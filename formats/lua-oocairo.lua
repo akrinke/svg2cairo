@@ -1,5 +1,5 @@
 --[[
-Copyright (c) 2010 Andreas Krinke
+Copyright (c) 2010-2014 Andreas Krinke
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -64,7 +64,7 @@ cr = Cairo.context_create(temp_surface)]],
   
   operator        = function(state, value) return format('cr:set_operator("%s")', lower(value)) end,
   tolerance       = "cr:set_tolerance($value)",
-  antialias       = function(state, value) return format('cr:set_antialias("%s")', lower(match(value, "_(.*)"))) end,
+  antialias       = function(state, value) return format('cr:set_antialias("%s")', lower(value)) end,
   ["fill-rule"]   = function(state, value) return format('cr:set_fill_rule("%s")', lower(gsub(value, "_", "-"))) end,
   ["line-width"]  = "cr:set_line_width($value)",
   ["miter-limit"] = "cr:set_miter_limit($value)",
