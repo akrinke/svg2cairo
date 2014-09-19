@@ -1,7 +1,7 @@
 #!/usr/bin/env lua
 
 --[[
-Copyright (c) 2010 Andreas Krinke
+Copyright (c) 2010, 2014 Andreas Krinke
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -131,7 +131,7 @@ function basename(path)
 	if not basename then
 		basename = file:match("^%.*(.*)$")
 	end
-	return (basename:gsub("%.", "_"))
+	return (basename:gsub("[%.-]", "_"))
 end
 
 --- Outputs the source code corresponding to the current tag.
