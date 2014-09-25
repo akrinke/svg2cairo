@@ -3,8 +3,15 @@ SRC = svg2cairoxml.c
 OBJ = $(SRC:.c=.o)
 
 CC = gcc
-CFLAGS  = -Wall -O3 $(shell pkg-config --cflags librsvg-2.0 cairo)
-LDFLAGS = $(shell pkg-config --libs librsvg-2.0 cairo)
+
+#############################################################
+# Uncomment for alternative Cairo installation in /usr/local/
+CFLAGS = -I/usr/local/include/cairo
+LDFLAGS = -L/usr/local/lib
+#############################################################
+
+CFLAGS  += -Wall -O3 $(shell pkg-config --cflags librsvg-2.0 cairo)
+LDFLAGS += $(shell pkg-config --libs librsvg-2.0 cairo)
 RM = rm
 
 %.o: %.c
@@ -16,6 +23,6 @@ $(TARGET): $(OBJ)
 	$(CC) $(OBJ) $(LDFLAGS) -o $@
 
 clean:
-	-$(RM) -f $(OBJ) $(TARGET) core
+	$(RM) -f $(OBJ) $(TARGET) core
 
 .PHONY: all clean

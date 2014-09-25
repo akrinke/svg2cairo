@@ -1,5 +1,5 @@
 --[[
-Copyright (c) 2010 Andreas Krinke
+Copyright (c) 2010-2014 Andreas Krinke
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ main = {
   render = function(dt)
     image:render(0,0)
   end,
-  
+
   keypressed = function(key)
     if key == "ESCAPE" then
       scrupp.exit()

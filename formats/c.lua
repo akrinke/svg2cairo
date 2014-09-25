@@ -39,30 +39,31 @@ int cairo_code_$basename_get_height() { return $height; }
 void cairo_code_$basename_render(cairo_t *cr) {
 cairo_surface_t *temp_surface;
 cairo_t *old_cr;
+double line_width = 1.0;
 cairo_pattern_t *pattern;
 cairo_matrix_t matrix;
 ]],
 
     post = "}"
   },
-  
+
   surface = {
     pre = [[
 old_cr = cr;
 temp_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, $width, $height);
 cr = cairo_create(temp_surface);]],
   },
-  
+
   fill   = {post = "cairo_fill_preserve(cr);\n /********************/"},
   stroke = {post = "cairo_stroke_preserve(cr);\n/********************/"},
   paint  = {post = "cairo_paint(cr);\n/********************/"},
   mask   = {},
-  
+
   operator        = "cairo_set_operator(cr, CAIRO_OPERATOR_$value);",
   tolerance       = "cairo_set_tolerance(cr, $value);",
   antialias       = "cairo_set_antialias(cr, CAIRO_ANTIALIAS_$value);",
   ["fill-rule"]   = "cairo_set_fill_rule(cr, CAIRO_FILL_RULE_$value);",
-  ["line-width"]  = "cairo_set_line_width(cr, $value);",
+  ["line-width"]  = "line_width = $value;\ncairo_set_line_width(cr, line_width);",
   ["miter-limit"] = "cairo_set_miter_limit(cr, $value);",
   ["line-cap"]    = "cairo_set_line_cap(cr, CAIRO_$value);",
   ["line-join"]   = "cairo_set_line_join(cr, CAIRO_$value);",
@@ -73,7 +74,7 @@ cr = cairo_create(temp_surface);]],
   ["color-stop"]  = function(state, value) return format("cairo_pattern_add_color_stop_rgba(pattern, %s);", gsub(value, " ", ",")) end,
   extend          = "cairo_pattern_set_extend(pattern, CAIRO_$value);",
   filter          = "cairo_pattern_set_filter(pattern, CAIRO_$value);",
-  
+
   ["source-pattern"] = {
     post = function(state, value)
       if state.last_environment == "surface" then
@@ -89,7 +90,7 @@ cairo_pattern_destroy(pattern);]]
       end
     end
   },
-  
+
   ["mask-pattern"] = {
     post = function(state, value)
       if state.last_environment == "surface" then
@@ -103,7 +104,7 @@ cairo_pattern_destroy(pattern);]]
       end
     end
   },
-  
+
   path = function(state, value)
     local s = {"cairo_new_path(cr);"}
     local stack = {}
@@ -125,17 +126,13 @@ cairo_pattern_destroy(pattern);]]
       end
     end
     return concat(s, "\n")
-  end,      
-  
-  matrix = function(state, value) 
-    local s = format("cairo_matrix_init(&matrix, %s);\n", gsub(value, " ", ","))
-    if state.last_environment == "surface" then
-      return s .. [[
-matrix.x0 = 0;
-matrix.y0 = 0;
-cairo_set_matrix(cr, &matrix);]]
+  end,
+
+  matrix = function(state, value)
+    if state.last_environment == "gradient" then
+      return format("cairo_matrix_init(&matrix, %s);\ncairo_pattern_set_matrix(pattern, &matrix);", gsub(value, " ", ","))
     else
-      return s .. "cairo_pattern_set_matrix(pattern, &matrix);"
+      return format("cairo_set_line_width(cr, line_width * %s);", match(value, "%S+"))
     end
   end
 }

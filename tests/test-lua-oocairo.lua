@@ -44,3 +44,5 @@ local cr = Cairo.context_create(surface)
 svg.render(cr)
 
 surface:write_to_png(arg[2])
+
+os.exit()

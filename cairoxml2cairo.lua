@@ -1,7 +1,7 @@
 #!/usr/bin/env lua
 
 --[[
-Copyright (c) 2010, 2014 Andreas Krinke
+Copyright (c) 2010-2014 Andreas Krinke
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -54,11 +54,17 @@ Is %s.lua missing in directory 'formats'?]], format, replacements, format))
   os.exit()
 end
 
--- list of tags, that start a pattern definition
-local pattern_tags = {
+-- list of tags that start/end a gradient definition
+local gradient_tags = {
   solid = true,
   linear = true,
   radial = true
+}
+
+-- list of tags that start/end a pattern definition
+local pattern_tags = {
+  ["source-pattern"] = true,
+  ["mask-pattern"] = true
 }
 
 -- stores the current state of cairo
@@ -126,12 +132,12 @@ end
 -- @patam path Path to extract the basename from.
 -- @return basename of the file
 function basename(path)
-	local file = path:match("([^\\/:]*)$")
-	local basename, ext = file:match("^%.*(.+)%.([^%.]-)$")
-	if not basename then
-		basename = file:match("^%.*(.*)$")
-	end
-	return (basename:gsub("[%.-]", "_"))
+  local file = path:match("([^\\/:]*)$")
+  local basename, ext = file:match("^%.*(.+)%.([^%.]-)$")
+  if not basename then
+    basename = file:match("^%.*(.*)$")
+  end
+  return (basename:gsub("[%.-]", "_"))
 end
 
 --- Outputs the source code corresponding to the current tag.
@@ -146,26 +152,12 @@ local function output(fh, basename, kind, t)
   if label == "svg" then
     error("svg tag detected\nPlease provide a cairo xml file, not an svg file.")
   end
-  
-  if kind == "pre" then
-    if pattern_tags[label] then
-      state.current_environment = "pattern"
-    else
-      state.current_environment = nil
-    end
-  else -- "post"
-    if label == "surface" then
-      state.last_environment = "surface"
-    elseif pattern_tags[label] then
-      state.last_environment = "pattern"
-    end
-  end
-  
+
   local rep = replacements[label]
   if not rep then
     error("not supported tag: " .. label)
   end
-  
+
   local s
   if kind == "pre" then
     if type(rep) == "table" then
@@ -178,7 +170,7 @@ local function output(fh, basename, kind, t)
       rep = nil
     end
   end
-  
+
   if type(rep) == "string" then
     s = rep
   elseif type(rep) == "function" then
@@ -189,6 +181,16 @@ local function output(fh, basename, kind, t)
     s = string.gsub(s, "$value", t[1])
     s = string.gsub(s, "$(%w+)", t.xarg)
     fh:write(s, "\n")
+  end
+
+  if kind == "post" then
+    if label == "surface" then
+      state.last_environment = "surface"
+    elseif gradient_tags[label] then
+      state.last_environment = "gradient"
+    elseif pattern_tags[label] then
+      state.last_environment = nil
+    end
   end
 end
 

@@ -37,47 +37,48 @@ return {
 local Cairo = require "oocairo"
 
 return {
-width = $width, 
+width = $width,
 height = $height,
 render = function(cr)
 
 local temp_surface
 local old_cr
+local line_width = 1
 local pattern
 local matrix
 ]],
 
     post = "end}"
   },
-  
+
   surface = {
     pre = [[
 old_cr = cr
 temp_surface = Cairo.image_surface_create("argb32", $width, $height)
 cr = Cairo.context_create(temp_surface)]],
   },
-  
+
   fill   = {post = "cr:fill_preserve()\n----------------------"},
   stroke = {post = "cr:stroke_preserve()\n----------------------"},
   paint  = {post = "cr:paint()\n----------------------"},
   mask   = {},
-  
+
   operator        = function(state, value) return format('cr:set_operator("%s")', lower(value)) end,
   tolerance       = "cr:set_tolerance($value)",
   antialias       = function(state, value) return format('cr:set_antialias("%s")', lower(value)) end,
   ["fill-rule"]   = function(state, value) return format('cr:set_fill_rule("%s")', lower(gsub(value, "_", "-"))) end,
-  ["line-width"]  = "cr:set_line_width($value)",
+  ["line-width"]  = "line_width = $value\ncr:set_line_width(line_width)",
   ["miter-limit"] = "cr:set_miter_limit($value)",
   ["line-cap"]    = function(state, value) return format('cr:set_line_cap("%s")', lower(match(value, "_([^_]-)$"))) end,
   ["line-join"]   = function(state, value) return format('cr:set_line_join("%s")', lower(match(value, "_([^_]-)$"))) end,
-  
+
   linear          = "pattern = Cairo.pattern_create_linear($x1, $y1, $x2, $y2)",
   radial          = "pattern = Cairo.pattern_create_radial($x1, $y1, $r1, $x2, $y2, $r2)",
   solid           = function(state, value) return format("pattern = Cairo.pattern_create_rgba(%s)", gsub(value, " ", ",")) end,
   ["color-stop"]  = function(state, value) return format("pattern:add_color_stop_rgba(%s)", gsub(value, " ", ",")) end,
   extend          = function(state, value) return format('pattern:set_extend("%s")', lower(match(value, "_(.*)"))) end,
   filter          = function(state, value) return format('pattern:set_filter("%s")', lower(match(value, "_(.*)"))) end,
-  
+
   ["source-pattern"] = {
     post = function(state, value)
       if state.last_environment == "surface" then
@@ -90,7 +91,7 @@ temp_surface = nil]]
       end
     end
   },
-  
+
   ["mask-pattern"] = {
     post = function(state, value)
       if state.last_environment == "surface" then
@@ -100,7 +101,7 @@ temp_surface = nil]]
       end
     end
   },
-  
+
   path = function(state, value)
     local s = {"cr:new_path()"}
     local stack = {}
@@ -122,14 +123,13 @@ temp_surface = nil]]
       end
     end
     return concat(s, "\n")
-  end,      
-  
-  matrix = function(state, value) 
-    local s = format("matrix = {%s}\n", gsub(value, " ", ","))
-    if state.last_environment == "surface" then
-      return s .. "matrix[5], matrix[6] = 0,0\ncr:set_matrix(matrix)"
+  end,
+
+  matrix = function(state, value)
+    if state.last_environment == "gradient" then
+      return format("matrix = {%s}\npattern:set_matrix(matrix)", gsub(value, " ", ","))
     else
-      return s .. "pattern:set_matrix(matrix)"
+      return format("cr:set_line_width(line_width * %s)", match(value, "%S+"))
     end
   end
 }
